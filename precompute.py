@@ -178,8 +178,7 @@ def main() -> None:
     target_skills = None
     if args.limit_candidates > 0 and args.jd and args.jd.exists():
         try:
-            jd_parser = JDParser()
-            jd = jd_parser.parse(args.jd)
+            jd = JDParser.from_docx(args.jd)
             target_skills = set()
             for s in jd.must_have_skills:
                 target_skills.add(s.name.lower())
