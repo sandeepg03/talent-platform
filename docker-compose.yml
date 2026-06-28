@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  # ── FastAPI ranking API ────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: talent-platform:latest
+    container_name: talent_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data:ro
+      - ./artifacts:/app/artifacts:ro
+    environment:
+      - ARTIFACTS_DIR=/app/artifacts
+      - CANDIDATES_JSONL=/app/data/candidates.jsonl
+      - JD_DOCX=/app/data/job_description.docx
+      - RETRIEVAL_TOP_K=500
+      - RERANK_TOP_K=200
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # ── Streamlit dashboard ────────────────────────────────────────
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: talent-platform:latest
+    container_name: talent_ui
+    command:
+      - streamlit
+      - run
+      - ui/app.py
+      - --server.port=8501
+      - --server.address=0.0.0.0
+      - --server.headless=true
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./ui:/app/ui:ro
+    environment:
+      - STREAMLIT_SERVER_HEADLESS=true
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── One-shot precompute (run manually, not started by default) ─
+  precompute:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: talent-platform:latest
+    container_name: talent_precompute
+    command: ["python", "precompute.py", "--force"]
+    volumes:
+      - ./data:/app/data:ro
+      - ./artifacts:/app/artifacts
+    profiles:
+      - precompute   # only runs with: docker compose --profile precompute up

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Project Specific Data & Artifacts (Large Files)
+data/candidates.jsonl
+artifacts/
+submission.csv
+
+# IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
