@@ -85,6 +85,18 @@ def _parse_args() -> argparse.Namespace:
         help="Maximum words to truncate candidate profile texts to before encoding.",
     )
     p.add_argument(
+        "--limit-candidates",
+        type=int,
+        default=5000,
+        help="Pre-filter to keep only the top N candidates by keyword similarity (0 for no limit).",
+    )
+    p.add_argument(
+        "--jd",
+        type=Path,
+        default=Path("data/job_description.docx"),
+        help="Path to job description for pre-filtering.",
+    )
+    p.add_argument(
         "--force",
         action="store_true",
         help="Re-encode even if artifacts already exist.",
@@ -160,24 +172,63 @@ def main() -> None:
     # ── Step 1: stream candidates, build and truncate texts ──────────────────
     logger.info("Step 1/3 — Streaming candidates and building embedding texts...")
     t_parse = time.perf_counter()
+    
+    from src.parsers.jd_parser import JDParser
+    
+    target_skills = None
+    if args.limit_candidates > 0 and args.jd and args.jd.exists():
+        try:
+            jd_parser = JDParser()
+            jd = jd_parser.parse(args.jd)
+            target_skills = set()
+            for s in jd.must_have_skills:
+                target_skills.add(s.name.lower())
+            for s in jd.nice_to_have_skills:
+                target_skills.add(s.name.lower())
+            target_title_words = set(jd.title.lower().split())
+            logger.info(f"Loaded job description for keyword pre-filtering. Target title: '{jd.title}'")
+        except Exception as e:
+            logger.warning(f"Could not parse job description for filtering: {e}. Indexing all candidates.")
+            
     parser = CandidateParser(args.candidates)
     builder = CandidateTextBuilder()
+
+    scored_profiles = []
+    for profile in parser.iter_candidates():
+        if target_skills is not None:
+            cand_skills = set(s.lower() for s in profile.skills)
+            skill_match_count = len(cand_skills.intersection(target_skills))
+            
+            cand_title = (profile.current_title or "").lower()
+            title_match_count = len(set(cand_title.split()).intersection(target_title_words))
+            
+            score = skill_match_count * 3 + title_match_count * 5
+            scored_profiles.append((score, profile))
+        else:
+            scored_profiles.append((0, profile))
+
+    if target_skills is not None and args.limit_candidates > 0:
+        scored_profiles.sort(key=lambda x: x[0], reverse=True)
+        keep_profiles = [p for _, p in scored_profiles[:args.limit_candidates]]
+        logger.info(f"Filtered candidate pool from {len(scored_profiles):,} to top {len(keep_profiles):,} by relevance score.")
+    else:
+        keep_profiles = [p for _, p in scored_profiles]
 
     candidate_ids: list[str] = []
     texts: list[str] = []
 
-    for profile in parser.iter_candidates():
+    for profile in keep_profiles:
         candidate_ids.append(profile.candidate_id)
         texts.append(_truncate(builder.build(profile), args.max_words))
 
     parse_elapsed = time.perf_counter() - t_parse
     logger.info(
-        f"  Loaded {len(texts):,} candidates in {parse_elapsed:.1f}s. "
+        f"  Prepared {len(texts):,} candidates in {parse_elapsed:.1f}s. "
         f"Avg text length: {sum(len(t.split()) for t in texts) // max(len(texts), 1)} words."
     )
 
     if not texts:
-        logger.error("No candidates parsed. Aborting.")
+        logger.error("No candidates selected. Aborting.")
         sys.exit(1)
 
     # ── Step 2: Staggered multi-process encode ────────────────────────────────
