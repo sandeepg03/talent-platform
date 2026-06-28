@@ -258,7 +258,7 @@ def main() -> None:
             # Stagger worker process startup to prevent OpenMP initialization deadlock/thrashing on CPU
             time.sleep(2.0)
             
-        logger.info(f"  All workers spawned. Waiting for encoding to complete...")
+        logger.info("  All workers spawned. Waiting for encoding to complete...")
         for p in processes:
             p.join()
             

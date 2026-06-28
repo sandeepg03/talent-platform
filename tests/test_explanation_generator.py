@@ -13,7 +13,6 @@ Covers:
 
 from __future__ import annotations
 
-import pytest
 
 from src.explanation.generator import ExplanationGenerator
 from src.schemas.scoring import FeatureVector, HybridScore

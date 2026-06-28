@@ -37,14 +37,12 @@ Note on github_activity_score: the field allows -1.0 as a sentinel for
 
 from __future__ import annotations
 
-from typing import Sequence
 
 from src.schemas.candidate import (
     CandidateProfile,
     EducationTier,
-    SkillProficiency,
 )
-from src.schemas.jd import ExperienceLevel, StructuredJD
+from src.schemas.jd import StructuredJD
 from src.schemas.scoring import FeatureVector
 
 # ---------------------------------------------------------------------------
@@ -149,7 +147,6 @@ class FeatureEngineer:
         Returns:
             FeatureVector ready for HybridScorer.score().
         """
-        sig = candidate.redrob_signals
         experience_score = self._experience_score(candidate, jd)
         education_score = self._education_score(candidate)
         certification_score = self._certification_score(candidate, jd)
@@ -217,7 +214,7 @@ class FeatureEngineer:
 
         Scoring rules:
           - Below min_years: linear ramp from 0 to 1 as years approach min
-            (partial credit — a candidate with 4 years vs min=5 is not zero)
+            (partial credit - a candidate with 4 years vs min=5 is not zero)
           - Within [min, max]: score = 1.0
           - Above max_years: linear decay toward 0.7 (over-qualified, not disqualified)
             capped at min score 0.7 regardless of how over-qualified
@@ -321,7 +318,7 @@ class FeatureEngineer:
         Compute the composite Redrob signal score and its 8 sub-components.
 
         Sub-component weights (sum to 1.0):
-          open_to_work            0.25  (binary — most impactful single signal)
+          open_to_work            0.25  (binary - most impactful single signal)
           response_rate           0.20  (recruiter engagement quality)
           interview_completion    0.15  (follow-through commitment)
           profile_completeness    0.15  (data quality / professionalism)

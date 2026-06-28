@@ -41,21 +41,18 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncIterator
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from pydantic import BaseModel, Field
 
-from src.embeddings.engine import EmbeddingEngine
 from src.explanation.generator import ExplanationGenerator
 from src.features.feature_engineer import FeatureEngineer
 from src.parsers.candidate_parser import CandidateParser, CandidateTextBuilder
 from src.parsers.jd_parser import JDParser
 from src.reranker.cross_encoder import CrossEncoderReranker
 from src.retrieval.retriever import Retriever
-from src.retrieval.vector_store import VectorStore
 from src.scoring.hybrid_scorer import HybridScorer, ScoringResult
-from src.schemas.scoring import HybridScore
 
 # ---------------------------------------------------------------------------
 # Config from environment

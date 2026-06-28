@@ -14,16 +14,11 @@ Covers:
 from __future__ import annotations
 
 import datetime
-from typing import Any
 
 import numpy as np
 import pytest
 
 from src.reranker.cross_encoder import RerankResult
-from src.schemas.candidate import (
-    CareerEntry, CandidateProfile, CompanySize, Education, EducationTier,
-    Profile, RedrobSignals, SalaryRange, Skill, SkillProficiency, WorkMode,
-)
 from src.schemas.scoring import FeatureVector, HybridScore
 from src.scoring.hybrid_scorer import HybridScorer, ScoringResult
 

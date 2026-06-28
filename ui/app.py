@@ -21,7 +21,6 @@ import time
 from typing import Any
 
 import plotly.express as px
-import plotly.graph_objects as go
 import requests
 import streamlit as st
 

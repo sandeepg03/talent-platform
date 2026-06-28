@@ -19,7 +19,6 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
-import pytest
 
 from src.features.feature_engineer import FeatureEngineer
 from src.schemas.candidate import (
@@ -29,8 +28,6 @@ from src.schemas.candidate import (
     CompanySize,
     Education,
     EducationTier,
-    Language,
-    LanguageProficiency,
     Profile,
     RedrobSignals,
     SalaryRange,

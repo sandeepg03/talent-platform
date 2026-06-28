@@ -19,11 +19,10 @@ Covers:
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
-from numpy.typing import NDArray
 
 from src.reranker.cross_encoder import (
     DEFAULT_CE_MODEL,
@@ -31,12 +30,6 @@ from src.reranker.cross_encoder import (
     RerankResult,
 )
 from src.retrieval.retriever import RetrievalResult
-from src.schemas.jd import (
-    ExperienceLevel,
-    ExperienceRequirement,
-    LocationRequirement,
-    StructuredJD,
-)
 
 # ---------------------------------------------------------------------------
 # Helpers

@@ -14,12 +14,10 @@ Contains slide structures for:
 from __future__ import annotations
 
 import os
-import sys
 
 # --- PPTX GENERATION ---
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
 
 # --- PDF GENERATION ---

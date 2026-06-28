@@ -16,9 +16,8 @@ Covers:
 from __future__ import annotations
 
 import pytest
-import numpy as np
 
-from src.evaluation.evaluator import EvaluationReport, RankingEvaluator
+from src.evaluation.evaluator import RankingEvaluator
 
 
 def _ids(n: int) -> list[str]:

@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from datetime import date
 from enum import Enum
-from typing import Annotated, Any
+from typing import Annotated
 
 from pydantic import (
     BaseModel,

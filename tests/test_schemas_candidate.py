@@ -3,16 +3,12 @@ Unit tests for src.schemas.candidate
 """
 from __future__ import annotations
 
-import json
-from datetime import date
 
 import pytest
 
 from src.schemas.candidate import (
     CandidateProfile,
-    CompanySize,
     EducationTier,
-    SkillProficiency,
     WorkMode,
 )
 
