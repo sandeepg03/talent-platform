@@ -18,6 +18,7 @@ env/
 data/candidates.jsonl
 artifacts/
 submission.csv
+submission.xlsx
 
 # IDEs
 .vscode/
