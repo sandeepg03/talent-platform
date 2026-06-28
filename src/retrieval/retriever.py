@@ -90,10 +90,7 @@ class RetrievalResult:
 
     def as_score_dict(self) -> dict[str, float]:
         """Return a dict mapping candidate_id → semantic_score for O(1) lookups."""
-        return {
-            cid: float(score)
-            for cid, score in zip(self.candidate_ids, self.semantic_scores)
-        }
+        return {cid: float(score) for cid, score in zip(self.candidate_ids, self.semantic_scores)}
 
 
 # ---------------------------------------------------------------------------
@@ -177,9 +174,7 @@ class Retriever:
                 f"Embedding artifacts not found in {d}. Run precompute.py first."
             )
         if not VectorStore.artifacts_exist(d):
-            raise FileNotFoundError(
-                f"FAISS index not found in {d}. Run precompute.py first."
-            )
+            raise FileNotFoundError(f"FAISS index not found in {d}. Run precompute.py first.")
 
         engine = EmbeddingEngine(
             model_name=model_name or DEFAULT_MODEL_NAME,
@@ -218,9 +213,7 @@ class Retriever:
         k = top_k if top_k is not None else self.default_top_k
         query_text = jd.embedding_text or jd.build_embedding_text()
 
-        logger.info(
-            f"Retrieval: encoding JD query ({len(query_text)} chars), top_k={k}"
-        )
+        logger.info(f"Retrieval: encoding JD query ({len(query_text)} chars), top_k={k}")
         t0 = time.perf_counter()
 
         query_vec: NDArray[np.float32] = self._engine.encode_query(query_text)

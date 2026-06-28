@@ -225,9 +225,7 @@ class CandidateProfile(BaseModel):
     @classmethod
     def validate_candidate_id(cls, v: str) -> str:
         if not CANDIDATE_ID_PATTERN.match(v):
-            raise ValueError(
-                f"candidate_id must match CAND_XXXXXXX (7 digits), got: {v!r}"
-            )
+            raise ValueError(f"candidate_id must match CAND_XXXXXXX (7 digits), got: {v!r}")
         return v
 
     @model_validator(mode="after")
@@ -236,8 +234,7 @@ class CandidateProfile(BaseModel):
         current_entries = [e for e in self.career_history if e.is_current]
         if len(current_entries) > 1:
             raise ValueError(
-                f"Multiple career entries marked is_current=True "
-                f"for candidate {self.candidate_id}"
+                f"Multiple career entries marked is_current=True for candidate {self.candidate_id}"
             )
         return self
 
@@ -267,14 +264,33 @@ class CandidateProfile(BaseModel):
         AI/ML-related production keywords.
         """
         ai_keywords = {
-            "embedding", "vector", "faiss", "retrieval", "ranking",
-            "transformer", "bert", "llm", "fine-tun", "pytorch", "tensorflow",
-            "sklearn", "machine learning", "deep learning", "nlp", "neural",
-            "sentence-transformer", "bge", "e5", "openai", "langchain",
-            "huggingface", "rag", "lora", "qlora", "peft",
+            "embedding",
+            "vector",
+            "faiss",
+            "retrieval",
+            "ranking",
+            "transformer",
+            "bert",
+            "llm",
+            "fine-tun",
+            "pytorch",
+            "tensorflow",
+            "sklearn",
+            "machine learning",
+            "deep learning",
+            "nlp",
+            "neural",
+            "sentence-transformer",
+            "bge",
+            "e5",
+            "openai",
+            "langchain",
+            "huggingface",
+            "rag",
+            "lora",
+            "qlora",
+            "peft",
         }
-        combined = " ".join(
-            e.description.lower() for e in self.career_history
-        )
+        combined = " ".join(e.description.lower() for e in self.career_history)
         combined += " " + " ".join(s.name.lower() for s in self.skills)
         return any(kw in combined for kw in ai_keywords)

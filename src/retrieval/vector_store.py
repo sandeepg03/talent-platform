@@ -79,9 +79,7 @@ class VectorStore:
             )
         self._index = index
         self._candidate_ids = candidate_ids
-        self._id_to_pos: dict[str, int] = {
-            cid: i for i, cid in enumerate(candidate_ids)
-        }
+        self._id_to_pos: dict[str, int] = {cid: i for i, cid in enumerate(candidate_ids)}
 
     # ------------------------------------------------------------------
     # Properties
@@ -129,9 +127,7 @@ class VectorStore:
             embeddings = embeddings.astype(np.float32)
 
         dim = embeddings.shape[1]
-        logger.info(
-            f"Building FAISS IndexFlatIP: {len(candidate_ids):,} vectors, dim={dim}"
-        )
+        logger.info(f"Building FAISS IndexFlatIP: {len(candidate_ids):,} vectors, dim={dim}")
         t0 = time.perf_counter()
 
         index = faiss.IndexFlatIP(dim)
@@ -169,8 +165,7 @@ class VectorStore:
         for p in (index_path, ids_path):
             if not p.exists():
                 raise FileNotFoundError(
-                    f"FAISS artifact not found: {p}. "
-                    "Run precompute.py first to generate the index."
+                    f"FAISS artifact not found: {p}. Run precompute.py first to generate the index."
                 )
 
         t0 = time.perf_counter()
@@ -179,9 +174,7 @@ class VectorStore:
         candidate_ids = [str(x) for x in raw_ids.tolist()]
         elapsed = time.perf_counter() - t0
 
-        logger.info(
-            f"FAISS index loaded: {index.ntotal:,} vectors in {elapsed:.3f}s ← {d}"
-        )
+        logger.info(f"FAISS index loaded: {index.ntotal:,} vectors in {elapsed:.3f}s ← {d}")
         return cls(index, candidate_ids)
 
     # ------------------------------------------------------------------
@@ -243,9 +236,7 @@ class VectorStore:
         if top_k < 1:
             raise ValueError(f"top_k must be >= 1, got {top_k}")
 
-        q = np.ascontiguousarray(
-            query_vec.reshape(1, -1), dtype=np.float32
-        )
+        q = np.ascontiguousarray(query_vec.reshape(1, -1), dtype=np.float32)
 
         effective_k = min(top_k, self.num_candidates)
         scores_raw, indices = self._index.search(q, effective_k)

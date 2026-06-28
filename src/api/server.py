@@ -78,8 +78,8 @@ class AppState:
     scorer: HybridScorer
     explainer: ExplanationGenerator
     jd_parser: JDParser
-    candidate_texts: dict[str, str]        # candidate_id → embedding text
-    candidate_map: dict[str, object]       # candidate_id → CandidateProfile
+    candidate_texts: dict[str, str]  # candidate_id → embedding text
+    candidate_map: dict[str, object]  # candidate_id → CandidateProfile
     last_result: ScoringResult | None = None
     startup_time_s: float = 0.0
 
@@ -283,9 +283,7 @@ async def rank(req: RankRequest) -> RankResponse:
         )
 
     # Step 5: Hybrid scoring
-    scoring_result = _state.scorer.score_all(
-        reranked, feature_vectors, top_n=100
-    )
+    scoring_result = _state.scorer.score_all(reranked, feature_vectors, top_n=100)
     _state.last_result = scoring_result
 
     # Step 6: Explanations + assemble response

@@ -105,9 +105,7 @@ class EmbeddingEngine:
         from sentence_transformers import SentenceTransformer
 
         effective_device = self._resolve_device()
-        logger.info(
-            f"Loading embedding model: {self.model_name!r} on device={effective_device!r}"
-        )
+        logger.info(f"Loading embedding model: {self.model_name!r} on device={effective_device!r}")
         t0 = time.perf_counter()
         self._model = SentenceTransformer(self.model_name, device=effective_device)
         elapsed = time.perf_counter() - t0
@@ -122,6 +120,7 @@ class EmbeddingEngine:
             return self.device
         try:
             import torch
+
             if torch.cuda.is_available():
                 logger.info("GPU detected — using CUDA for embedding.")
                 return "cuda"
@@ -304,8 +303,9 @@ class EmbeddingEngine:
         np.save(emb_path, embeddings)
         np.save(ids_path, np.array(candidate_ids, dtype=object))
 
-        import json
         import datetime as dt
+        import json
+
         meta = {
             "model_name": DEFAULT_MODEL_NAME,
             "embedding_dim": int(embeddings.shape[1]),

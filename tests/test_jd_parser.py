@@ -19,18 +19,17 @@ from pathlib import Path
 import pytest
 
 from src.parsers.jd_parser import (
-    JDParser,
     _DISQUALIFYING_PATTERNS,
     _KEY_TECHNOLOGIES,
     _MUST_HAVE_SKILLS,
     _NICE_TO_HAVE_SKILLS,
+    JDParser,
 )
 from src.schemas.jd import (
     ExperienceLevel,
     RequirementPriority,
     StructuredJD,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -100,17 +99,13 @@ class TestFromCanonical:
 
 
 class TestSkillPriorities:
-    def test_all_must_have_have_correct_priority(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_all_must_have_have_correct_priority(self, canonical_jd: StructuredJD) -> None:
         for skill in canonical_jd.must_have_skills:
             assert skill.priority == RequirementPriority.MUST_HAVE, (
                 f"{skill.name!r} has wrong priority: {skill.priority}"
             )
 
-    def test_all_nice_to_have_have_correct_priority(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_all_nice_to_have_have_correct_priority(self, canonical_jd: StructuredJD) -> None:
         for skill in canonical_jd.nice_to_have_skills:
             assert skill.priority == RequirementPriority.NICE_TO_HAVE, (
                 f"{skill.name!r} has wrong priority: {skill.priority}"
@@ -128,21 +123,15 @@ class TestSkillPriorities:
         pref_names = canonical_jd.all_preferred_skill_names
         assert "lora" in pref_names
 
-    def test_no_overlap_between_must_and_nice(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_no_overlap_between_must_and_nice(self, canonical_jd: StructuredJD) -> None:
         must = set(canonical_jd.all_required_skill_names)
         nice = set(canonical_jd.all_preferred_skill_names)
         overlap = must & nice
         assert not overlap, f"Skills in both lists: {overlap}"
 
-    def test_all_must_have_have_nonempty_context(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_all_must_have_have_nonempty_context(self, canonical_jd: StructuredJD) -> None:
         for skill in canonical_jd.must_have_skills:
-            assert skill.context.strip(), (
-                f"Must-have skill {skill.name!r} has empty context"
-            )
+            assert skill.context.strip(), f"Must-have skill {skill.name!r} has empty context"
 
 
 # ---------------------------------------------------------------------------
@@ -151,30 +140,20 @@ class TestSkillPriorities:
 
 
 class TestEmbeddingText:
-    def test_embedding_text_contains_title(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_embedding_text_contains_title(self, canonical_jd: StructuredJD) -> None:
         assert "Senior AI Engineer" in canonical_jd.embedding_text
 
-    def test_embedding_text_contains_required_skills(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_embedding_text_contains_required_skills(self, canonical_jd: StructuredJD) -> None:
         assert "Python" in canonical_jd.embedding_text
         assert "FAISS" in canonical_jd.embedding_text
 
-    def test_embedding_text_contains_preferred_skills(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_embedding_text_contains_preferred_skills(self, canonical_jd: StructuredJD) -> None:
         assert "LoRA" in canonical_jd.embedding_text
 
-    def test_embedding_text_contains_experience_range(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_embedding_text_contains_experience_range(self, canonical_jd: StructuredJD) -> None:
         assert "5.0" in canonical_jd.embedding_text or "5-9" in canonical_jd.embedding_text
 
-    def test_build_embedding_text_is_deterministic(
-        self, canonical_jd: StructuredJD
-    ) -> None:
+    def test_build_embedding_text_is_deterministic(self, canonical_jd: StructuredJD) -> None:
         t1 = canonical_jd.build_embedding_text()
         t2 = canonical_jd.build_embedding_text()
         assert t1 == t2
@@ -211,33 +190,25 @@ class TestFromRawText:
 
 
 class TestSaveLoad:
-    def test_save_creates_json_file(
-        self, canonical_jd: StructuredJD, tmp_path: Path
-    ) -> None:
+    def test_save_creates_json_file(self, canonical_jd: StructuredJD, tmp_path: Path) -> None:
         output = tmp_path / "jd_cache.json"
         JDParser.save(canonical_jd, output)
         assert output.exists()
 
-    def test_saved_file_is_valid_json(
-        self, canonical_jd: StructuredJD, tmp_path: Path
-    ) -> None:
+    def test_saved_file_is_valid_json(self, canonical_jd: StructuredJD, tmp_path: Path) -> None:
         output = tmp_path / "jd_cache.json"
         JDParser.save(canonical_jd, output)
         payload = json.loads(output.read_text(encoding="utf-8"))
         assert "title" in payload
         assert "must_have_skills" in payload
 
-    def test_load_returns_structured_jd(
-        self, canonical_jd: StructuredJD, tmp_path: Path
-    ) -> None:
+    def test_load_returns_structured_jd(self, canonical_jd: StructuredJD, tmp_path: Path) -> None:
         output = tmp_path / "jd_cache.json"
         JDParser.save(canonical_jd, output)
         restored = JDParser.load(output)
         assert isinstance(restored, StructuredJD)
 
-    def test_load_preserves_title(
-        self, canonical_jd: StructuredJD, tmp_path: Path
-    ) -> None:
+    def test_load_preserves_title(self, canonical_jd: StructuredJD, tmp_path: Path) -> None:
         output = tmp_path / "jd_cache.json"
         JDParser.save(canonical_jd, output)
         restored = JDParser.load(output)
@@ -272,9 +243,7 @@ class TestSaveLoad:
         with pytest.raises(FileNotFoundError):
             JDParser.load(tmp_path / "nonexistent.json")
 
-    def test_save_creates_parent_dirs(
-        self, canonical_jd: StructuredJD, tmp_path: Path
-    ) -> None:
+    def test_save_creates_parent_dirs(self, canonical_jd: StructuredJD, tmp_path: Path) -> None:
         output = tmp_path / "subdir" / "deep" / "jd.json"
         JDParser.save(canonical_jd, output)
         assert output.exists()

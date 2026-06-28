@@ -91,7 +91,9 @@ class TestScoringResult:
             for i in range(n_clean)
         ]
         honey = [
-            HybridScore.compute(f"CAND_{i+n_clean:07d}", 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, is_honeypot=True)
+            HybridScore.compute(
+                f"CAND_{i + n_clean:07d}", 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, is_honeypot=True
+            )
             for i in range(n_honey)
         ]
         return ScoringResult(
@@ -271,10 +273,7 @@ class TestScoreOne:
         sem, ce, exp, sig, edu, cert = 0.8, 0.7, 0.9, 0.6, 0.75, 0.5
         fv = _fv("CAND_0000001", exp=exp, edu=edu, cert=cert, sig=sig)
         hs = scorer.score_one("CAND_0000001", sem, ce, fv)
-        expected = (
-            0.40 * sem + 0.30 * ce + 0.10 * exp
-            + 0.10 * sig + 0.05 * edu + 0.05 * cert
-        )
+        expected = 0.40 * sem + 0.30 * ce + 0.10 * exp + 0.10 * sig + 0.05 * edu + 0.05 * cert
         assert abs(hs.composite_score - expected) < 1e-5
 
     def test_perfect_candidate_scores_100(self) -> None:
@@ -319,7 +318,12 @@ class TestFormulaInvariants:
         base = scorer.score_one("CAND_0000001", 0.5, 0.5, base_fv).final_score
         delta_sem = scorer.score_one("CAND_0000001", 0.6, 0.5, base_fv).final_score - base
         delta_ce = scorer.score_one("CAND_0000001", 0.5, 0.6, base_fv).final_score - base
-        delta_exp = scorer.score_one("CAND_0000001", 0.5, 0.5, _fv("CAND_0000001", exp=0.6, edu=0.5, cert=0.5, sig=0.5)).final_score - base
+        delta_exp = (
+            scorer.score_one(
+                "CAND_0000001", 0.5, 0.5, _fv("CAND_0000001", exp=0.6, edu=0.5, cert=0.5, sig=0.5)
+            ).final_score
+            - base
+        )
         assert delta_sem > delta_ce > delta_exp
 
     def test_ce_weight_second_largest(self) -> None:
@@ -327,5 +331,10 @@ class TestFormulaInvariants:
         base_fv = _fv("CAND_0000001", exp=0.5, edu=0.5, cert=0.5, sig=0.5)
         base = scorer.score_one("CAND_0000001", 0.5, 0.5, base_fv).final_score
         delta_ce = scorer.score_one("CAND_0000001", 0.5, 0.6, base_fv).final_score - base
-        delta_edu = scorer.score_one("CAND_0000001", 0.5, 0.5, _fv("CAND_0000001", exp=0.5, edu=0.6, cert=0.5, sig=0.5)).final_score - base
+        delta_edu = (
+            scorer.score_one(
+                "CAND_0000001", 0.5, 0.5, _fv("CAND_0000001", exp=0.5, edu=0.6, cert=0.5, sig=0.5)
+            ).final_score
+            - base
+        )
         assert delta_ce > delta_edu

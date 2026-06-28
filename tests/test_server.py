@@ -23,7 +23,7 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from src.api.server import app, _state
+from src.api.server import _state, app
 from src.reranker.cross_encoder import RerankResult
 from src.retrieval.retriever import RetrievalResult
 from src.schemas.scoring import FeatureVector, HybridScore
@@ -123,9 +123,12 @@ def _patch_state(monkeypatch: pytest.MonkeyPatch) -> None:
 
     # Mock JD parser
     from src.schemas.jd import (
-        ExperienceLevel, ExperienceRequirement, LocationRequirement,
+        ExperienceLevel,
+        ExperienceRequirement,
+        LocationRequirement,
         StructuredJD,
     )
+
     mock_jd = StructuredJD(
         title="Senior AI Engineer",
         company="Test Co",
@@ -134,7 +137,8 @@ def _patch_state(monkeypatch: pytest.MonkeyPatch) -> None:
         nice_to_have_skills=[],
         disqualifying_patterns=[],
         experience=ExperienceRequirement(
-            min_years=4.0, max_years=10.0,
+            min_years=4.0,
+            max_years=10.0,
             preferred_level=ExperienceLevel.SENIOR,
         ),
         location=LocationRequirement(),
@@ -166,6 +170,7 @@ def _patch_state(monkeypatch: pytest.MonkeyPatch) -> None:
 # ---------------------------------------------------------------------------
 # Client fixture (no lifespan — state patched directly)
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:

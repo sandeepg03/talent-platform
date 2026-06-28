@@ -1,6 +1,7 @@
 """
 Unit tests for src.schemas.scoring
 """
+
 from __future__ import annotations
 
 import csv
@@ -13,7 +14,6 @@ from src.schemas.scoring import (
     SubmissionResult,
     SubmissionRow,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -81,8 +81,7 @@ class TestHybridScoreCompute:
             certification_score=0.3,
         )
         expected_composite = (
-            0.40 * 0.8 + 0.30 * 0.6 + 0.10 * 0.7
-            + 0.10 * 0.5 + 0.05 * 0.4 + 0.05 * 0.3
+            0.40 * 0.8 + 0.30 * 0.6 + 0.10 * 0.7 + 0.10 * 0.5 + 0.05 * 0.4 + 0.05 * 0.3
         )
         assert abs(score.composite_score - expected_composite) < 1e-9
         assert abs(score.final_score - round(expected_composite * 100.0, 4)) < 1e-6
@@ -225,5 +224,5 @@ class TestSubmissionCSV:
         for i in range(len(scores) - 1):
             assert scores[i] >= scores[i + 1], (
                 f"Score at position {i} ({scores[i]}) is less than "
-                f"score at position {i+1} ({scores[i+1]})"
+                f"score at position {i + 1} ({scores[i + 1]})"
             )

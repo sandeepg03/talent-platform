@@ -67,9 +67,9 @@ class RerankResult:
     """
 
     candidate_ids: list[str]
-    semantic_scores: NDArray[np.float32]   # from FAISS bi-encoder
-    ce_scores: NDArray[np.float32]          # normalised cross-encoder scores [0,1]
-    ce_raw_scores: NDArray[np.float32]      # raw logits before normalisation
+    semantic_scores: NDArray[np.float32]  # from FAISS bi-encoder
+    ce_scores: NDArray[np.float32]  # normalised cross-encoder scores [0,1]
+    ce_raw_scores: NDArray[np.float32]  # raw logits before normalisation
     query_text: str
     rerank_time_ms: float
 
@@ -82,8 +82,7 @@ class RerankResult:
         ):
             if len(arr) != n:
                 raise ValueError(
-                    f"{arr_name} length ({len(arr)}) must equal "
-                    f"candidate_ids length ({n})."
+                    f"{arr_name} length ({len(arr)}) must equal candidate_ids length ({n})."
                 )
 
     @property
@@ -96,17 +95,11 @@ class RerankResult:
 
     def as_ce_score_dict(self) -> dict[str, float]:
         """Return dict mapping candidate_id → ce_score for O(1) lookups."""
-        return {
-            cid: float(s)
-            for cid, s in zip(self.candidate_ids, self.ce_scores)
-        }
+        return {cid: float(s) for cid, s in zip(self.candidate_ids, self.ce_scores)}
 
     def as_semantic_score_dict(self) -> dict[str, float]:
         """Return dict mapping candidate_id → semantic_score for O(1) lookups."""
-        return {
-            cid: float(s)
-            for cid, s in zip(self.candidate_ids, self.semantic_scores)
-        }
+        return {cid: float(s) for cid, s in zip(self.candidate_ids, self.semantic_scores)}
 
 
 # ---------------------------------------------------------------------------
@@ -164,9 +157,7 @@ class CrossEncoderReranker:
         from sentence_transformers import CrossEncoder
 
         effective_device = self._resolve_device()
-        logger.info(
-            f"Loading CrossEncoder: {self.model_name!r} on device={effective_device!r}"
-        )
+        logger.info(f"Loading CrossEncoder: {self.model_name!r} on device={effective_device!r}")
         t0 = time.perf_counter()
         self._model = CrossEncoder(
             self.model_name,
@@ -181,6 +172,7 @@ class CrossEncoderReranker:
             return self.device
         try:
             import torch
+
             if torch.cuda.is_available():
                 return "cuda"
         except ImportError:
@@ -233,9 +225,7 @@ class CrossEncoderReranker:
         for cid in candidate_ids:
             text = candidate_texts.get(cid)
             if text is None:
-                logger.warning(
-                    f"candidate_id {cid!r} not found in candidate_texts — skipping."
-                )
+                logger.warning(f"candidate_id {cid!r} not found in candidate_texts — skipping.")
                 continue
             # Truncate candidate text to keep within max_length budget
             # Cross-encoder tokenises both sides together; trim to ~1000 chars
@@ -251,8 +241,7 @@ class CrossEncoderReranker:
             )
 
         logger.info(
-            f"CrossEncoder scoring {len(pairs)} pairs "
-            f"(batch_size={self.batch_size}, top_k={top_k})"
+            f"CrossEncoder scoring {len(pairs)} pairs (batch_size={self.batch_size}, top_k={top_k})"
         )
         t0 = time.perf_counter()
 

@@ -37,7 +37,6 @@ Note on github_activity_score: the field allows -1.0 as a sentinel for
 
 from __future__ import annotations
 
-
 from src.schemas.candidate import (
     CandidateProfile,
     EducationTier,
@@ -80,33 +79,35 @@ _DEGREE_BONUS: dict[str, float] = {
 }
 
 # Certification keywords → relevance signal to an AI/ML JD
-_RELEVANT_CERT_KEYWORDS: frozenset[str] = frozenset({
-    "machine learning",
-    "deep learning",
-    "nlp",
-    "natural language",
-    "tensorflow",
-    "pytorch",
-    "aws",
-    "gcp",
-    "azure",
-    "cloud",
-    "data science",
-    "data engineering",
-    "mlops",
-    "kubernetes",
-    "docker",
-    "python",
-    "sql",
-    "spark",
-    "airflow",
-    "databricks",
-    "llm",
-    "generative ai",
-    "ai",
-    "neural",
-    "computer vision",
-})
+_RELEVANT_CERT_KEYWORDS: frozenset[str] = frozenset(
+    {
+        "machine learning",
+        "deep learning",
+        "nlp",
+        "natural language",
+        "tensorflow",
+        "pytorch",
+        "aws",
+        "gcp",
+        "azure",
+        "cloud",
+        "data science",
+        "data engineering",
+        "mlops",
+        "kubernetes",
+        "docker",
+        "python",
+        "sql",
+        "spark",
+        "airflow",
+        "databricks",
+        "llm",
+        "generative ai",
+        "ai",
+        "neural",
+        "computer vision",
+    }
+)
 
 
 # ---------------------------------------------------------------------------
@@ -169,12 +170,8 @@ class FeatureEngineer:
         nice_to_have_names = {s.name.lower() for s in jd.nice_to_have_skills}
         candidate_skill_names = set(candidate.skill_names)
 
-        matched_must = sorted(
-            candidate_skill_names & must_have_names
-        )
-        matched_nice = sorted(
-            candidate_skill_names & nice_to_have_names
-        )
+        matched_must = sorted(candidate_skill_names & must_have_names)
+        matched_nice = sorted(candidate_skill_names & nice_to_have_names)
 
         cert_names = [c.name for c in candidate.certifications]
 
@@ -349,6 +346,7 @@ class FeatureEngineer:
 
         # 5. Recency: days since last active — cap at 90 days for scoring
         import datetime
+
         today = datetime.date.today()
         days_inactive = max(0, (today - sig.last_active_date).days)
         recency = float(max(0.0, 1.0 - (days_inactive / 90.0)))
@@ -359,10 +357,10 @@ class FeatureEngineer:
 
         # 7. Assessment average: mean of all skill assessment scores [0, 100] → [0, 1]
         if sig.skill_assessment_scores:
-            assessment_avg = float(
-                sum(sig.skill_assessment_scores.values()) /
-                len(sig.skill_assessment_scores)
-            ) / 100.0
+            assessment_avg = (
+                float(sum(sig.skill_assessment_scores.values()) / len(sig.skill_assessment_scores))
+                / 100.0
+            )
         else:
             assessment_avg = 0.0
 
@@ -408,10 +406,7 @@ class FeatureEngineer:
         sig = candidate.redrob_signals
 
         # Rule 1: Instant universal responder
-        if (
-            sig.recruiter_response_rate >= 1.0
-            and sig.avg_response_time_hours < 0.1
-        ):
+        if sig.recruiter_response_rate >= 1.0 and sig.avg_response_time_hours < 0.1:
             return True
 
         # Rule 2: All-perfect signals simultaneously
@@ -427,10 +422,7 @@ class FeatureEngineer:
             return True
 
         # Rule 4: Zero notice and not open to work (contradictory signals)
-        if (
-            sig.notice_period_days == 0
-            and not sig.open_to_work_flag
-        ):
+        if sig.notice_period_days == 0 and not sig.open_to_work_flag:
             return True
 
         return False

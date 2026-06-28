@@ -85,9 +85,7 @@ def validate_submission(csv_path):
         if not cid:
             errors.append(f"Row {row_num}: candidate_id is required.")
         elif not CANDIDATE_ID_PATTERN.match(cid):
-            errors.append(
-                f"Row {row_num}: candidate_id must be CAND_XXXXXXX (7 digits)."
-            )
+            errors.append(f"Row {row_num}: candidate_id must be CAND_XXXXXXX (7 digits).")
         elif cid in seen_ids:
             errors.append(f"Row {row_num}: duplicate candidate_id '{cid}'.")
         else:
@@ -118,9 +116,7 @@ def validate_submission(csv_path):
 
     missing = set(range(1, 101)) - seen_ranks
     if missing:
-        errors.append(
-            f"Each rank 1–100 must appear exactly once; missing: {sorted(missing)}"
-        )
+        errors.append(f"Each rank 1–100 must appear exactly once; missing: {sorted(missing)}")
 
     by_rank.sort(key=lambda x: x[0])
 
@@ -129,8 +125,7 @@ def validate_submission(csv_path):
         r2, s2, _ = by_rank[i + 1]
         if s1 < s2:
             errors.append(
-                f"score must be non-increasing by rank: "
-                f"rank {r1} ({s1}) < rank {r2} ({s2})."
+                f"score must be non-increasing by rank: rank {r1} ({s1}) < rank {r2} ({s2})."
             )
 
     for i in range(len(by_rank) - 1):

@@ -95,10 +95,7 @@ def _validate_args(args: argparse.Namespace) -> None:
         logger.error(f"Candidates file not found: {args.candidates}")
         sys.exit(1)
     if not args.artifacts.exists():
-        logger.error(
-            f"Artifacts directory not found: {args.artifacts}. "
-            "Run precompute.py first."
-        )
+        logger.error(f"Artifacts directory not found: {args.artifacts}. Run precompute.py first.")
         sys.exit(1)
 
 
@@ -116,8 +113,8 @@ def main() -> None:
     from src.parsers.jd_parser import JDParser
     from src.reranker.cross_encoder import CrossEncoderReranker
     from src.retrieval.retriever import Retriever
-    from src.scoring.hybrid_scorer import HybridScorer
     from src.schemas.scoring import SubmissionResult, SubmissionRow
+    from src.scoring.hybrid_scorer import HybridScorer
 
     # ── Step 1: Parse JD ─────────────────────────────────────────────────────
     logger.info(f"Step 1/8 — Parsing JD: {args.jd}")
@@ -174,8 +171,7 @@ def main() -> None:
         top_k=args.rerank_k,
     )
     logger.info(
-        f"  Reranked to {reranked.num_candidates} candidates "
-        f"in {reranked.rerank_time_ms:.0f}ms"
+        f"  Reranked to {reranked.num_candidates} candidates in {reranked.rerank_time_ms:.0f}ms"
     )
 
     # ── Step 6: Feature extraction ────────────────────────────────────────────

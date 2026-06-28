@@ -28,7 +28,6 @@ from src.embeddings.engine import (
     EmbeddingEngine,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -267,9 +266,7 @@ class TestEmbeddingEngineIntegration:
         q = engine.encode_query("Senior AI Engineer skilled in FAISS and NLP.")
         assert q.shape == (1, engine.embedding_dim)
 
-    def test_relevant_candidate_higher_similarity(
-        self, engine: EmbeddingEngine
-    ) -> None:
+    def test_relevant_candidate_higher_similarity(self, engine: EmbeddingEngine) -> None:
         """A strong ML engineer text should score higher than an accountant text."""
         jd_text = (
             "Senior AI Engineer: embeddings, FAISS, sentence-transformers, "
@@ -290,17 +287,13 @@ class TestEmbeddingEngineIntegration:
             f"Expected ML ({sims[0]:.4f}) > Accountant ({sims[1]:.4f})"
         )
 
-    def test_encode_corpus_batched_matches_encode_texts(
-        self, engine: EmbeddingEngine
-    ) -> None:
+    def test_encode_corpus_batched_matches_encode_texts(self, engine: EmbeddingEngine) -> None:
         texts = [f"Text number {i} about machine learning." for i in range(20)]
         vecs_standard = engine.encode_texts(texts)
         vecs_batched = engine.encode_corpus_batched(texts)
         np.testing.assert_allclose(vecs_standard, vecs_batched, atol=1e-5)
 
-    def test_save_load_integration(
-        self, engine: EmbeddingEngine, tmp_path: Path
-    ) -> None:
+    def test_save_load_integration(self, engine: EmbeddingEngine, tmp_path: Path) -> None:
         texts = ["Python developer.", "Data scientist.", "ML Engineer."]
         ids = [f"CAND_{i:07d}" for i in range(1, 4)]
         vecs = engine.encode_texts(texts)

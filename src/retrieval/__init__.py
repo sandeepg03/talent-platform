@@ -11,4 +11,3 @@ __all__ = [
     "VectorStore",
     "INDEX_FILENAME",
 ]
-

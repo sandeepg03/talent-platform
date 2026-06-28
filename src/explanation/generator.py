@@ -118,7 +118,9 @@ class ExplanationGenerator:
             skill_str = ", ".join(must[:5])
             parts.append(f"Matched {len(must)} required skill(s): {skill_str}.")
         if nice:
-            parts.append(f"Also demonstrates {len(nice)} preferred skill(s): {', '.join(nice[:3])}.")
+            parts.append(
+                f"Also demonstrates {len(nice)} preferred skill(s): {', '.join(nice[:3])}."
+            )
         if certs:
             parts.append(f"Holds {len(certs)} relevant certification(s) including {certs[0]}.")
 
@@ -148,7 +150,9 @@ class ExplanationGenerator:
         else:
             tier = "limited"
 
-        open_flag = "open to opportunities" if fv.signal_open_to_work >= 1.0 else "not currently open"
+        open_flag = (
+            "open to opportunities" if fv.signal_open_to_work >= 1.0 else "not currently open"
+        )
         response = round(fv.signal_response_rate * 100)
 
         return (

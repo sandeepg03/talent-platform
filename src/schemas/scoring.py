@@ -14,7 +14,6 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field, model_validator
 
-
 # ---------------------------------------------------------------------------
 # Per-stage score containers
 # ---------------------------------------------------------------------------
@@ -24,7 +23,7 @@ class SemanticScore(BaseModel):
     """Output of the FAISS retrieval stage."""
 
     candidate_id: str
-    faiss_rank: int          # Rank within the FAISS top-K result set
+    faiss_rank: int  # Rank within the FAISS top-K result set
     cosine_similarity: Annotated[float, Field(ge=0.0, le=1.0)]
 
     model_config = {"frozen": True}
@@ -34,7 +33,7 @@ class CrossEncoderScore(BaseModel):
     """Output of the cross-encoder reranking stage."""
 
     candidate_id: str
-    raw_score: float         # Logit output from the cross-encoder
+    raw_score: float  # Logit output from the cross-encoder
     normalized_score: Annotated[float, Field(ge=0.0, le=1.0)]
 
     model_config = {"frozen": True}
@@ -178,9 +177,7 @@ class SubmissionRow(BaseModel):
     @model_validator(mode="after")
     def validate_reasoning_not_empty(self) -> "SubmissionRow":
         if not self.reasoning.strip():
-            raise ValueError(
-                f"reasoning must not be empty for candidate {self.candidate_id}"
-            )
+            raise ValueError(f"reasoning must not be empty for candidate {self.candidate_id}")
         return self
 
 
@@ -235,6 +232,4 @@ class SubmissionResult(BaseModel):
             writer = csv.writer(f)
             writer.writerow(["candidate_id", "rank", "score", "reasoning"])
             for row in sorted_rows:
-                writer.writerow(
-                    [row.candidate_id, row.rank, f"{row.score:.4f}", row.reasoning]
-                )
+                writer.writerow([row.candidate_id, row.rank, f"{row.score:.4f}", row.reasoning])

@@ -129,8 +129,11 @@ class TestRetrievalResult:
         ids = _make_ids(3)
         scores = np.array([0.9, 0.75, 0.6], dtype=np.float32)
         result = RetrievalResult(
-            candidate_ids=ids, semantic_scores=scores,
-            query_text="q", top_k=3, retrieval_time_ms=1.0,
+            candidate_ids=ids,
+            semantic_scores=scores,
+            query_text="q",
+            top_k=3,
+            retrieval_time_ms=1.0,
         )
         assert abs(result.score_for(ids[1]) - 0.75) < 1e-5
 
@@ -138,8 +141,11 @@ class TestRetrievalResult:
         ids = _make_ids(3)
         scores = np.array([0.9, 0.75, 0.6], dtype=np.float32)
         result = RetrievalResult(
-            candidate_ids=ids, semantic_scores=scores,
-            query_text="q", top_k=3, retrieval_time_ms=1.0,
+            candidate_ids=ids,
+            semantic_scores=scores,
+            query_text="q",
+            top_k=3,
+            retrieval_time_ms=1.0,
         )
         assert result.score_for("CAND_9999999") == -1.0
 
@@ -147,8 +153,11 @@ class TestRetrievalResult:
         ids = _make_ids(10)
         scores = np.linspace(1.0, 0.1, 10, dtype=np.float32)
         result = RetrievalResult(
-            candidate_ids=ids, semantic_scores=scores,
-            query_text="q", top_k=10, retrieval_time_ms=1.0,
+            candidate_ids=ids,
+            semantic_scores=scores,
+            query_text="q",
+            top_k=10,
+            retrieval_time_ms=1.0,
         )
         assert result.top_n_ids(3) == ids[:3]
 
@@ -156,8 +165,11 @@ class TestRetrievalResult:
         ids = _make_ids(5)
         scores = np.array([0.9, 0.8, 0.7, 0.6, 0.5], dtype=np.float32)
         result = RetrievalResult(
-            candidate_ids=ids, semantic_scores=scores,
-            query_text="q", top_k=5, retrieval_time_ms=1.0,
+            candidate_ids=ids,
+            semantic_scores=scores,
+            query_text="q",
+            top_k=5,
+            retrieval_time_ms=1.0,
         )
         d = result.as_score_dict()
         assert set(d.keys()) == set(ids)
@@ -167,8 +179,11 @@ class TestRetrievalResult:
         ids = _make_ids(3)
         scores = np.array([0.9, 0.7, 0.5], dtype=np.float32)
         result = RetrievalResult(
-            candidate_ids=ids, semantic_scores=scores,
-            query_text="q", top_k=3, retrieval_time_ms=1.0,
+            candidate_ids=ids,
+            semantic_scores=scores,
+            query_text="q",
+            top_k=3,
+            retrieval_time_ms=1.0,
         )
         d = result.as_score_dict()
         for v in d.values():
@@ -178,8 +193,11 @@ class TestRetrievalResult:
         ids = _make_ids(7)
         scores = np.zeros(7, dtype=np.float32)
         result = RetrievalResult(
-            candidate_ids=ids, semantic_scores=scores,
-            query_text="q", top_k=10, retrieval_time_ms=1.0,
+            candidate_ids=ids,
+            semantic_scores=scores,
+            query_text="q",
+            top_k=10,
+            retrieval_time_ms=1.0,
         )
         assert result.num_retrieved == 7
 
@@ -187,8 +205,11 @@ class TestRetrievalResult:
         ids = _make_ids(2)
         scores = np.array([0.9, 0.5], dtype=np.float32)
         result = RetrievalResult(
-            candidate_ids=ids, semantic_scores=scores,
-            query_text="q", top_k=2, retrieval_time_ms=1.0,
+            candidate_ids=ids,
+            semantic_scores=scores,
+            query_text="q",
+            top_k=2,
+            retrieval_time_ms=1.0,
         )
         with pytest.raises((TypeError, AttributeError)):
             result.top_k = 999  # type: ignore[misc]
@@ -354,6 +375,7 @@ class TestFromArtifactsErrors:
         ids = _make_ids(5)
         vecs = _unit_vecs(5)
         from src.embeddings.engine import EmbeddingEngine
+
         EmbeddingEngine.save(ids, vecs, tmp_path)
         # FAISS index NOT saved — from_artifacts must detect this
         with pytest.raises(FileNotFoundError, match="precompute"):

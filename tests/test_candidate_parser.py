@@ -6,6 +6,7 @@ Covers:
   - CandidateParser: iterator correctness, batch yielding, error recovery,
     load_by_id, build_text_corpus, count_records
 """
+
 from __future__ import annotations
 
 import json
@@ -15,7 +16,6 @@ import pytest
 
 from src.parsers.candidate_parser import CandidateParser, CandidateTextBuilder
 from src.schemas.candidate import CandidateProfile
-
 
 # ---------------------------------------------------------------------------
 # Shared test fixtures
@@ -64,9 +64,7 @@ BASE_CANDIDATE: dict = {
         {"name": "Python", "proficiency": "advanced", "endorsements": 50, "duration_months": 84},
         {"name": "SQL", "proficiency": "beginner", "endorsements": 5, "duration_months": 12},
     ],
-    "certifications": [
-        {"name": "AWS ML Specialty", "issuer": "Amazon", "year": 2022}
-    ],
+    "certifications": [{"name": "AWS ML Specialty", "issuer": "Amazon", "year": 2022}],
     "languages": [{"language": "English", "proficiency": "professional"}],
     "redrob_signals": {
         "profile_completeness_score": 92.0,
@@ -99,6 +97,7 @@ BASE_CANDIDATE: dict = {
 def _make_candidate(overrides: dict | None = None) -> dict:
     """Deep-copy BASE_CANDIDATE and apply overrides."""
     import copy
+
     record = copy.deepcopy(BASE_CANDIDATE)
     if overrides:
         record.update(overrides)
@@ -184,6 +183,7 @@ class TestCandidateTextBuilder:
 
     def test_github_absent_when_score_is_negative(self) -> None:
         import copy
+
         rec = copy.deepcopy(BASE_CANDIDATE)
         rec["redrob_signals"]["github_activity_score"] = -1
         candidate = CandidateProfile.model_validate(rec)

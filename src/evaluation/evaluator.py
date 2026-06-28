@@ -27,7 +27,6 @@ from dataclasses import dataclass
 
 import numpy as np
 
-
 # ---------------------------------------------------------------------------
 # Result container
 # ---------------------------------------------------------------------------
@@ -46,7 +45,7 @@ class EvaluationReport:
     ndcg_at_100: float
     precision_at_10: float
     precision_at_20: float
-    mrr: float                    # Mean Reciprocal Rank
+    mrr: float  # Mean Reciprocal Rank
     honeypot_exclusion_rate: float  # fraction of honeypots NOT in top-100
 
     # Score distribution
@@ -123,8 +122,7 @@ class RankingEvaluator:
         """
         if len(ranked_ids) != len(scores):
             raise ValueError(
-                f"ranked_ids ({len(ranked_ids)}) and scores ({len(scores)}) "
-                "must have equal length."
+                f"ranked_ids ({len(ranked_ids)}) and scores ({len(scores)}) must have equal length."
             )
 
         scores_arr = np.array(scores, dtype=np.float64)
@@ -180,9 +178,7 @@ class RankingEvaluator:
         positions = np.arange(2, len(top_k) + 2, dtype=np.float64)  # ranks 1-indexed → log2(rank+1)
         return float(np.sum(top_k / np.log2(positions)))
 
-    def _ndcg(
-        self, relevance: np.ndarray, relevant_ids: set[str], k: int
-    ) -> float:
+    def _ndcg(self, relevance: np.ndarray, relevant_ids: set[str], k: int) -> float:
         """Normalised DCG at k. Returns 0 if no relevant items exist."""
         if not relevant_ids:
             return 0.0

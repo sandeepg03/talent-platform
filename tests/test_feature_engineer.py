@@ -19,12 +19,11 @@ from __future__ import annotations
 import datetime
 from typing import Any
 
-
 from src.features.feature_engineer import FeatureEngineer
 from src.schemas.candidate import (
+    CandidateProfile,
     CareerEntry,
     Certification,
-    CandidateProfile,
     CompanySize,
     Education,
     EducationTier,
@@ -218,8 +217,10 @@ class TestExtract:
         eng = FeatureEngineer()
         fv = eng.extract(_candidate(), _jd())
         for field_name in (
-            "experience_score", "education_score",
-            "certification_score", "redrob_signal_score",
+            "experience_score",
+            "education_score",
+            "certification_score",
+            "redrob_signal_score",
         ):
             score = getattr(fv, field_name)
             assert 0.0 <= score <= 1.0, f"{field_name} out of range: {score}"
@@ -362,10 +363,12 @@ class TestEducationScore:
 
     def test_multiple_degrees_takes_best(self) -> None:
         eng = FeatureEngineer()
-        cand = _candidate(education=[
-            _edu("Bachelor", EducationTier.TIER_4),
-            _edu("Master of Science", EducationTier.TIER_1),
-        ])
+        cand = _candidate(
+            education=[
+                _edu("Bachelor", EducationTier.TIER_4),
+                _edu("Master of Science", EducationTier.TIER_1),
+            ]
+        )
         score = eng._education_score(cand)
         # Tier1 master = 1.0 + 0.10 → clamped 1.0
         assert abs(score - 1.0) < 1e-6
@@ -451,8 +454,11 @@ class TestRedrobScore:
 
     def test_github_100_maps_to_one(self) -> None:
         eng = FeatureEngineer()
-        sig = _signals(github_activity_score=100.0, interview_completion_rate=0.5,
-                        profile_completeness_score=80.0)
+        sig = _signals(
+            github_activity_score=100.0,
+            interview_completion_rate=0.5,
+            profile_completeness_score=80.0,
+        )
         _, _, _, _, _, _, github, _, _ = eng._redrob_score(_candidate(signals=sig))
         assert abs(github - 1.0) < 1e-6
 

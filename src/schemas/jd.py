@@ -13,16 +13,15 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-
 # ---------------------------------------------------------------------------
 # Enumerations
 # ---------------------------------------------------------------------------
 
 
 class ExperienceLevel(str, Enum):
-    JUNIOR = "junior"        # 0-2 yrs
-    MID = "mid"              # 3-5 yrs
-    SENIOR = "senior"        # 5-9 yrs
+    JUNIOR = "junior"  # 0-2 yrs
+    MID = "mid"  # 3-5 yrs
+    SENIOR = "senior"  # 5-9 yrs
     PRINCIPAL = "principal"  # 9+ yrs
 
 

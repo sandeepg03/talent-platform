@@ -96,7 +96,7 @@ class TestPrecision:
     def test_half_relevant_precision_half(self) -> None:
         ev = RankingEvaluator()
         ids = _ids(10)
-        relevant = set(ids[:5])   # first 5 are relevant
+        relevant = set(ids[:5])  # first 5 are relevant
         report = ev.evaluate(ids, _scores(10), relevant)
         assert abs(report.precision_at_10 - 0.5) < 1e-6
 
@@ -106,7 +106,7 @@ class TestPrecision:
         # Relevant only at positions 11–20
         relevant = set(ids[10:20])
         report = ev.evaluate(ids, _scores(100), relevant)
-        assert report.precision_at_10 == 0.0   # none in top-10
+        assert report.precision_at_10 == 0.0  # none in top-10
         assert abs(report.precision_at_20 - 0.5) < 1e-6  # 10/20
 
 
@@ -205,9 +205,20 @@ class TestReportHelpers:
         ids = _ids(10)
         report = ev.evaluate(ids, _scores(10), set(ids[:3]))
         d = report.as_dict()
-        for key in ("ndcg@10", "ndcg@20", "ndcg@100", "precision@10",
-                    "precision@20", "mrr", "honeypot_exclusion_rate",
-                    "score_mean", "score_std", "score_min", "score_max", "score_median"):
+        for key in (
+            "ndcg@10",
+            "ndcg@20",
+            "ndcg@100",
+            "precision@10",
+            "precision@20",
+            "mrr",
+            "honeypot_exclusion_rate",
+            "score_mean",
+            "score_std",
+            "score_min",
+            "score_max",
+            "score_median",
+        ):
             assert key in d
 
     def test_mismatched_lengths_raises(self) -> None:

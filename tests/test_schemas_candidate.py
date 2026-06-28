@@ -1,8 +1,8 @@
 """
 Unit tests for src.schemas.candidate
 """
-from __future__ import annotations
 
+from __future__ import annotations
 
 import pytest
 
@@ -11,7 +11,6 @@ from src.schemas.candidate import (
     EducationTier,
     WorkMode,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -59,12 +58,8 @@ VALID_CANDIDATE_DICT: dict = {
         {"name": "FAISS", "proficiency": "expert", "endorsements": 30, "duration_months": 36},
         {"name": "Python", "proficiency": "expert", "endorsements": 50, "duration_months": 84},
     ],
-    "certifications": [
-        {"name": "AWS ML Specialty", "issuer": "Amazon", "year": 2022}
-    ],
-    "languages": [
-        {"language": "English", "proficiency": "professional"}
-    ],
+    "certifications": [{"name": "AWS ML Specialty", "issuer": "Amazon", "year": 2022}],
+    "languages": [{"language": "English", "proficiency": "professional"}],
     "redrob_signals": {
         "profile_completeness_score": 92.0,
         "signup_date": "2023-01-15",
@@ -136,9 +131,10 @@ class TestCandidateProfileValidation:
 
     def test_multiple_is_current_raises(self) -> None:
         extra_job = {**VALID_CANDIDATE_DICT["career_history"][0], "company": "Other Corp"}
-        bad = {**VALID_CANDIDATE_DICT, "career_history": [
-            VALID_CANDIDATE_DICT["career_history"][0], extra_job
-        ]}
+        bad = {
+            **VALID_CANDIDATE_DICT,
+            "career_history": [VALID_CANDIDATE_DICT["career_history"][0], extra_job],
+        }
         with pytest.raises(Exception):
             CandidateProfile.model_validate(bad)
 

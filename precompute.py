@@ -25,13 +25,13 @@ from __future__ import annotations
 import argparse
 import os
 import sys
-import time
 import tempfile
-from pathlib import Path
+import time
 from multiprocessing import Process
+from pathlib import Path
 
-from loguru import logger
 import numpy as np
+from loguru import logger
 
 # bge-small instruction prefix
 _BGE_QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
@@ -123,10 +123,10 @@ def _worker_encode(
 
     # Restrict PyTorch thread count inside worker to prevent core oversubscription/thrashing
     torch.set_num_threads(threads)
-    
+
     # Load model locally in this process
     model = SentenceTransformer(model_name, device="cpu")
-    
+
     # Perform batch encoding
     embeddings = model.encode(
         texts,
@@ -135,7 +135,7 @@ def _worker_encode(
         normalize_embeddings=True,
         convert_to_numpy=True,
     )
-    
+
     # Save the chunk results to temp file
     out_path = os.path.join(temp_dir, f"chunk_{worker_id}.npy")
     np.save(out_path, embeddings.astype(np.float32))
@@ -172,9 +172,9 @@ def main() -> None:
     # ── Step 1: stream candidates, build and truncate texts ──────────────────
     logger.info("Step 1/3 — Streaming candidates and building embedding texts...")
     t_parse = time.perf_counter()
-    
+
     from src.parsers.jd_parser import JDParser
-    
+
     target_skills = None
     if args.limit_candidates > 0 and args.jd and args.jd.exists():
         try:
@@ -185,10 +185,14 @@ def main() -> None:
             for s in jd.nice_to_have_skills:
                 target_skills.add(s.name.lower())
             target_title_words = set(jd.title.lower().split())
-            logger.info(f"Loaded job description for keyword pre-filtering. Target title: '{jd.title}'")
+            logger.info(
+                f"Loaded job description for keyword pre-filtering. Target title: '{jd.title}'"
+            )
         except Exception as e:
-            logger.warning(f"Could not parse job description for filtering: {e}. Indexing all candidates.")
-            
+            logger.warning(
+                f"Could not parse job description for filtering: {e}. Indexing all candidates."
+            )
+
     parser = CandidateParser(args.candidates)
     builder = CandidateTextBuilder()
 
@@ -197,10 +201,10 @@ def main() -> None:
         if target_skills is not None:
             cand_skills = set(profile.skill_names)
             skill_match_count = len(cand_skills.intersection(target_skills))
-            
+
             cand_title = (profile.profile.current_title or "").lower()
             title_match_count = len(set(cand_title.split()).intersection(target_title_words))
-            
+
             score = skill_match_count * 3 + title_match_count * 5
             scored_profiles.append((score, profile))
         else:
@@ -208,8 +212,10 @@ def main() -> None:
 
     if target_skills is not None and args.limit_candidates > 0:
         scored_profiles.sort(key=lambda x: x[0], reverse=True)
-        keep_profiles = [p for _, p in scored_profiles[:args.limit_candidates]]
-        logger.info(f"Filtered candidate pool from {len(scored_profiles):,} to top {len(keep_profiles):,} by relevance score.")
+        keep_profiles = [p for _, p in scored_profiles[: args.limit_candidates]]
+        logger.info(
+            f"Filtered candidate pool from {len(scored_profiles):,} to top {len(keep_profiles):,} by relevance score."
+        )
     else:
         keep_profiles = [p for _, p in scored_profiles]
 
@@ -233,35 +239,42 @@ def main() -> None:
     # ── Step 2: Staggered multi-process encode ────────────────────────────────
     cpu_count = os.cpu_count() or 4
     n_workers = args.workers or min(max(cpu_count // 2, 1), 6)
-    
+
     logger.info(
         f"Step 2/3 — Staggering {n_workers} worker processes, "
         f"threads_per_worker={args.threads_per_worker}, batch_size={args.batch_size}..."
     )
-    
+
     # Split text corpus into chunks for parallel workers
     chunks = np.array_split(texts, n_workers)
-    
+
     t_enc = time.perf_counter()
-    
+
     with tempfile.TemporaryDirectory() as temp_dir:
         processes = []
         for idx, chunk in enumerate(chunks):
             chunk_list = chunk.tolist()
             p = Process(
                 target=_worker_encode,
-                args=(idx, chunk_list, temp_dir, model_name, args.batch_size, args.threads_per_worker),
+                args=(
+                    idx,
+                    chunk_list,
+                    temp_dir,
+                    model_name,
+                    args.batch_size,
+                    args.threads_per_worker,
+                ),
             )
             processes.append(p)
             p.start()
-            
+
             # Stagger worker process startup to prevent OpenMP initialization deadlock/thrashing on CPU
             time.sleep(2.0)
-            
+
         logger.info("  All workers spawned. Waiting for encoding to complete...")
         for p in processes:
             p.join()
-            
+
         # Consolidate chunked embeddings
         all_embeddings = []
         for idx in range(n_workers):
@@ -270,7 +283,7 @@ def main() -> None:
                 logger.error(f"Worker {idx} failed to produce embeddings. Aborting.")
                 sys.exit(1)
             all_embeddings.append(np.load(chunk_path))
-            
+
         embeddings = np.vstack(all_embeddings)
 
     enc_elapsed = time.perf_counter() - t_enc
@@ -291,12 +304,11 @@ def main() -> None:
     store.save(args.artifacts)
     faiss_elapsed = time.perf_counter() - t_faiss
     logger.info(
-        f"  FAISS index built and saved: {store.num_candidates:,} vectors "
-        f"in {faiss_elapsed:.2f}s"
+        f"  FAISS index built and saved: {store.num_candidates:,} vectors in {faiss_elapsed:.2f}s"
     )
 
     total = time.perf_counter() - t0
-    logger.info(f"=== precompute.py complete in {total:.1f}s ({total/60:.1f} min) ===")
+    logger.info(f"=== precompute.py complete in {total:.1f}s ({total / 60:.1f} min) ===")
     logger.info(f"Artifacts ready in: {args.artifacts.resolve()}")
     logger.info("")
     logger.info("Next step:")

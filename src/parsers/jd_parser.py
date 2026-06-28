@@ -114,12 +114,36 @@ _DISQUALIFYING_PATTERNS: list[str] = [
 ]
 
 _KEY_TECHNOLOGIES: list[str] = [
-    "FAISS", "sentence-transformers", "BGE", "E5", "OpenAI embeddings",
-    "Pinecone", "Weaviate", "Qdrant", "Milvus", "OpenSearch", "Elasticsearch",
-    "Python", "LoRA", "QLoRA", "PEFT", "XGBoost", "BM25",
-    "NDCG", "MRR", "MAP", "A/B testing",
-    "embeddings", "retrieval", "ranking", "reranking", "LLM",
-    "transformer", "NLP", "information retrieval", "hybrid search",
+    "FAISS",
+    "sentence-transformers",
+    "BGE",
+    "E5",
+    "OpenAI embeddings",
+    "Pinecone",
+    "Weaviate",
+    "Qdrant",
+    "Milvus",
+    "OpenSearch",
+    "Elasticsearch",
+    "Python",
+    "LoRA",
+    "QLoRA",
+    "PEFT",
+    "XGBoost",
+    "BM25",
+    "NDCG",
+    "MRR",
+    "MAP",
+    "A/B testing",
+    "embeddings",
+    "retrieval",
+    "ranking",
+    "reranking",
+    "LLM",
+    "transformer",
+    "NLP",
+    "information retrieval",
+    "hybrid search",
 ]
 
 _JD_RAW_TEXT = """\
@@ -294,9 +318,7 @@ class JDParser:
             from docx.table import Table
             from docx.text.paragraph import Paragraph
         except ImportError:
-            logger.warning(
-                "python-docx not installed — falling back to embedded JD text."
-            )
+            logger.warning("python-docx not installed — falling back to embedded JD text.")
             return _JD_RAW_TEXT
 
         doc = Document(str(path))

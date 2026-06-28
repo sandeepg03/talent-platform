@@ -138,9 +138,7 @@ with st.sidebar:
             r = requests.get(f"{api_url}/health", timeout=5)
             if r.status_code == 200:
                 data = r.json()
-                st.success(
-                    f"✅ API online — {data['num_candidates']:,} candidates indexed"
-                )
+                st.success(f"✅ API online — {data['num_candidates']:,} candidates indexed")
             else:
                 st.error(f"API returned {r.status_code}")
         except Exception as e:
@@ -162,7 +160,7 @@ st.markdown(
 )
 st.markdown(
     '<div class="hero-sub">Expert recruiter-grade candidate ranking '
-    '— FAISS retrieval · Cross-encoder reranking · Hybrid scoring</div>',
+    "— FAISS retrieval · Cross-encoder reranking · Hybrid scoring</div>",
     unsafe_allow_html=True,
 )
 
@@ -170,9 +168,7 @@ st.markdown(
 # Tabs
 # ---------------------------------------------------------------------------
 
-tab_rank, tab_top100, tab_analytics = st.tabs(
-    ["🚀 Rank Candidates", "📋 Top 100", "📊 Analytics"]
-)
+tab_rank, tab_top100, tab_analytics = st.tabs(["🚀 Rank Candidates", "📋 Top 100", "📊 Analytics"])
 
 # ── Tab 1: Rank ─────────────────────────────────────────────────────────────
 
@@ -254,12 +250,12 @@ with tab_rank:
                                 with c2:
                                     st.markdown(
                                         f"| Signal | Score |\n|---|---|\n"
-                                        f"| 🔵 Semantic | {entry['semantic_similarity']*100:.1f}% |\n"
-                                        f"| 🟢 Cross-Enc | {entry['cross_encoder_score']*100:.1f}% |\n"
-                                        f"| 🟠 Experience | {entry['experience_score']*100:.1f}% |\n"
-                                        f"| 🟣 Redrob | {entry['redrob_signal_score']*100:.1f}% |\n"
-                                        f"| 📚 Education | {entry['education_score']*100:.1f}% |\n"
-                                        f"| 🏅 Certs | {entry['certification_score']*100:.1f}% |"
+                                        f"| 🔵 Semantic | {entry['semantic_similarity'] * 100:.1f}% |\n"
+                                        f"| 🟢 Cross-Enc | {entry['cross_encoder_score'] * 100:.1f}% |\n"
+                                        f"| 🟠 Experience | {entry['experience_score'] * 100:.1f}% |\n"
+                                        f"| 🟣 Redrob | {entry['redrob_signal_score'] * 100:.1f}% |\n"
+                                        f"| 📚 Education | {entry['education_score'] * 100:.1f}% |\n"
+                                        f"| 🏅 Certs | {entry['certification_score'] * 100:.1f}% |"
                                     )
 
                 except requests.exceptions.ConnectionError:
@@ -295,15 +291,28 @@ with tab_top100:
         import pandas as pd
 
         df = pd.DataFrame(top100_data)[
-            ["rank", "candidate_id", "final_score",
-             "semantic_similarity", "cross_encoder_score",
-             "experience_score", "education_score",
-             "certification_score", "redrob_signal_score"]
+            [
+                "rank",
+                "candidate_id",
+                "final_score",
+                "semantic_similarity",
+                "cross_encoder_score",
+                "experience_score",
+                "education_score",
+                "certification_score",
+                "redrob_signal_score",
+            ]
         ]
         df.columns = [
-            "Rank", "Candidate ID", "Final Score",
-            "Semantic", "Cross-Enc",
-            "Experience", "Education", "Certs", "Redrob Signal",
+            "Rank",
+            "Candidate ID",
+            "Final Score",
+            "Semantic",
+            "Cross-Enc",
+            "Experience",
+            "Education",
+            "Certs",
+            "Redrob Signal",
         ]
         for col in df.columns[2:]:
             df[col] = df[col].round(4)
@@ -316,9 +325,7 @@ with tab_top100:
 with tab_analytics:
     st.markdown("### Score Distribution Analytics")
 
-    chart_data: list[dict[str, Any]] = st.session_state.get(
-        "last_rank_data", {}
-    ).get("top_100", [])
+    chart_data: list[dict[str, Any]] = st.session_state.get("last_rank_data", {}).get("top_100", [])
 
     if not chart_data:
         st.info("Run the pipeline first to view analytics.")

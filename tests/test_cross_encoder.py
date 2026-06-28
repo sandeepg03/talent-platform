@@ -55,10 +55,7 @@ def _make_retrieval_result(
 
 
 def _make_candidate_texts(ids: list[str], prefix: str = "ML Engineer with ") -> dict[str, str]:
-    return {
-        cid: f"{prefix}FAISS and Python experience. Candidate {cid}."
-        for cid in ids
-    }
+    return {cid: f"{prefix}FAISS and Python experience. Candidate {cid}." for cid in ids}
 
 
 def _make_reranker_with_mock(
@@ -179,7 +176,7 @@ class TestNormalise:
     def test_extremes_map_to_zero_and_one(self) -> None:
         raw = np.array([-10.0, 10.0], dtype=np.float32)
         norm = CrossEncoderReranker._normalise(raw)
-        assert abs(float(norm[0])) < 1e-4   # min → 0
+        assert abs(float(norm[0])) < 1e-4  # min → 0
         assert abs(float(norm[1]) - 1.0) < 1e-4  # max → 1
 
     def test_output_dtype_float32(self) -> None:
@@ -365,9 +362,7 @@ class TestCrossEncoderIntegration:
     def test_model_loaded(self, reranker: CrossEncoderReranker) -> None:
         assert reranker._model is not None
 
-    def test_rerank_produces_valid_result(
-        self, reranker: CrossEncoderReranker
-    ) -> None:
+    def test_rerank_produces_valid_result(self, reranker: CrossEncoderReranker) -> None:
         rr = _make_retrieval_result(10)
         texts = _make_candidate_texts(rr.candidate_ids)
         result = reranker.rerank(rr, texts, top_k=5)
@@ -415,9 +410,7 @@ class TestCrossEncoderIntegration:
             f"({ce_dict['CAND_0000002']:.4f})"
         )
 
-    def test_scores_descending_after_rerank(
-        self, reranker: CrossEncoderReranker
-    ) -> None:
+    def test_scores_descending_after_rerank(self, reranker: CrossEncoderReranker) -> None:
         rr = _make_retrieval_result(20)
         texts = _make_candidate_texts(rr.candidate_ids)
         result = reranker.rerank(rr, texts, top_k=20)

@@ -26,7 +26,6 @@ from pydantic import ValidationError
 
 from src.schemas.candidate import CandidateProfile, SkillProficiency
 
-
 # ---------------------------------------------------------------------------
 # Text builder
 # ---------------------------------------------------------------------------
@@ -93,8 +92,7 @@ class CandidateTextBuilder:
         for entry in career_sorted[:5]:
             duration_years = round(entry.duration_months / 12, 1)
             career_parts.append(
-                f"[{entry.title} at {entry.company}, {duration_years} yrs] "
-                f"{entry.description}"
+                f"[{entry.title} at {entry.company}, {duration_years} yrs] {entry.description}"
             )
         if career_parts:
             sections.append("Work experience: " + " | ".join(career_parts))
@@ -110,9 +108,7 @@ class CandidateTextBuilder:
         # --- Section 5: Education ---
         edu_parts: list[str] = []
         for edu in candidate.education:
-            edu_parts.append(
-                f"{edu.degree} in {edu.field_of_study} from {edu.institution}"
-            )
+            edu_parts.append(f"{edu.degree} in {edu.field_of_study} from {edu.institution}")
         if edu_parts:
             sections.append(f"Education: {'; '.join(edu_parts)}")
 
@@ -165,9 +161,7 @@ class CandidateParser:
         if not self._path.exists():
             raise FileNotFoundError(f"Candidates file not found: {self._path}")
         if self._path.suffix.lower() != ".jsonl":
-            raise ValueError(
-                f"Expected a .jsonl file, got: {self._path.suffix!r}"
-            )
+            raise ValueError(f"Expected a .jsonl file, got: {self._path.suffix!r}")
         self._text_builder = CandidateTextBuilder()
         logger.info(f"CandidateParser initialized with: {self._path}")
 
@@ -193,9 +187,7 @@ class CandidateParser:
                 try:
                     raw: dict = json.loads(line)
                 except json.JSONDecodeError as exc:
-                    logger.warning(
-                        f"Line {line_number}: JSON parse error — {exc}. Skipping."
-                    )
+                    logger.warning(f"Line {line_number}: JSON parse error — {exc}. Skipping.")
                     error_count += 1
                     continue
                 try:
@@ -210,13 +202,9 @@ class CandidateParser:
                     )
                     error_count += 1
 
-        logger.info(
-            f"Parsing complete: {valid_count} valid, {error_count} skipped."
-        )
+        logger.info(f"Parsing complete: {valid_count} valid, {error_count} skipped.")
 
-    def iter_batches(
-        self, batch_size: int = 512
-    ) -> Generator[list[CandidateProfile], None, None]:
+    def iter_batches(self, batch_size: int = 512) -> Generator[list[CandidateProfile], None, None]:
         """
         Yield lists of up to ``batch_size`` validated CandidateProfile objects.
 

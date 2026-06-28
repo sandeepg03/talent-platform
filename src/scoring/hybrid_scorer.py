@@ -59,9 +59,9 @@ class ScoringResult:
         num_input:     How many candidates entered the scorer.
     """
 
-    ranked: list[HybridScore]         # top-100, honeypot-free
-    all_scored: list[HybridScore]     # full set, sorted descending
-    honeypots: list[HybridScore]      # flagged but scored
+    ranked: list[HybridScore]  # top-100, honeypot-free
+    all_scored: list[HybridScore]  # full set, sorted descending
+    honeypots: list[HybridScore]  # flagged but scored
     num_input: int
 
     @property
