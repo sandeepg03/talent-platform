@@ -1,6 +1,6 @@
 # AI Talent Intelligence Platform
 
-[![CI](https://github.com/your-org/talent-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/talent-platform/actions/workflows/ci.yml)
+[![CI](https://github.com/sandeepg03/talent-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/sandeepg03/talent-platform/actions/workflows/ci.yml)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -58,7 +58,7 @@ Final Score ∈ [0, 100]
 ### 1. Install
 
 ```bash
-git clone https://github.com/your-org/talent-platform.git
+git clone https://github.com/sandeepg03/talent-platform.git
 cd talent-platform
 pip install -e .
 ```
