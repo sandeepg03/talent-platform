@@ -195,10 +195,10 @@ def main() -> None:
     scored_profiles = []
     for profile in parser.iter_candidates():
         if target_skills is not None:
-            cand_skills = set(s.lower() for s in profile.skills)
+            cand_skills = set(profile.skill_names)
             skill_match_count = len(cand_skills.intersection(target_skills))
             
-            cand_title = (profile.current_title or "").lower()
+            cand_title = (profile.profile.current_title or "").lower()
             title_match_count = len(set(cand_title.split()).intersection(target_title_words))
             
             score = skill_match_count * 3 + title_match_count * 5
